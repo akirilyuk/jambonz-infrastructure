@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+    name: traefik
+    labels:
+        app: traefik
+spec:
+    ports:
+    - name: traefik-http
+      port: 80
+      targetPort: 8000
+      protocol: TCP
+    - protocol: TCP
+      port: 8080
+      name: admin
+    externalIPs:
+      - 10.48.249.22 # add you external IP here!
+    type: LoadBalancer
+    selector:
+        app: traefik

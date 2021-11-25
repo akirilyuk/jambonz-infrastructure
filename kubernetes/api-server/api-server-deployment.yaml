@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: api-server
+  name: api-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-server
+  template:
+    metadata:
+      labels:
+        app: api-server
+    spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      initContainers:
+        - args:
+            - wait
+            - --for=condition=complete
+            - --timeout=300s
+            - job/db-create
+          image: d3fk/kubectl:v1.18
+          name: db-create-wait
+      containers:
+        - name: api-server
+          image: jambonz/jambonz-api-server:latest
+          env:
+            - name: HTTP_PORT
+              value: "3000"
+            - name: JAMBONE_API_VERSION
+              value: v1
+            - name: JAMBONES_CLUSTER_ID
+              valueFrom:
+                secretKeyRef:
+                  name: jambonz
+                  key: JAMBONES_CLUSTER_ID
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: jambonz
+                  key: JWT_SECRET
+            - name: NODE_ENV
+              valueFrom:
+                secretKeyRef:
+                  name: jambonz
+                  key: NODE_ENV
+            - name: JAMBONES_MYSQL_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: jambonz
+                  key: JAMBONES_MYSQL_DATABASE
+            - name: JAMBONES_MYSQL_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: jambonz
+                  key: JAMBONES_MYSQL_HOST
+            - name: JAMBONES_MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: jambonz
+                  key: JAMBONES_MYSQL_PASSWORD
+            - name: JAMBONES_MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: jambonz
+                  key: JAMBONES_MYSQL_USER
+            - name: JAMBONES_REDIS_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: jambonz
+                  key: JAMBONES_REDIS_HOST
+            - name: JAMBONES_REDIS_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: jambonz
+                  key: JAMBONES_REDIS_PORT
+            - name: JAMBONES_TIME_SERIES_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: jambonz
+                  key: JAMBONES_TIME_SERIES_HOST
+            - name: ENABLE_METRICS
+              valueFrom:
+                secretKeyRef:
+                  name: jambonz
+                  key: ENABLE_METRICS
+          ports:
+            - containerPort: 3000
+          resources: {}
+      restartPolicy: Always

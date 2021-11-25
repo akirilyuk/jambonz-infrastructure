@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: webapp
+  name: webapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      containers:
+        - env:
+            - name: REACT_APP_API_BASE_URL
+              value: http://api/v1
+            - name: NODE_OPTIONS
+              value: '--openssl-legacy-provider'
+            - name: DEBUG 
+              value: 'express:*'
+          image: jambonz/webapp:latest
+          name: webapp
+          ports:
+            - containerPort: 3001
+          resources: {}
+      restartPolicy: Always

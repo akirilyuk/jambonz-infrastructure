@@ -46,7 +46,7 @@ kubectl label nodes worker1 voip-environment=edge &&
 kubectl label nodes worker2 voip-environment=edge &&
 # we need to have 2 different groups so no ports are blocked by the other deployment...
 kubectl taint nodes worker1 voip-edge=true:NoSchedule
-kubectl taint nodes worker2 voip-edge=media-edge:NoSchedule 
+kubectl taint nodes worker2 media-edge=true:NoSchedule 
  
 # create registry token
 kubectl create secret docker-registry cognigy-registry-token \

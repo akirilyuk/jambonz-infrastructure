@@ -9,7 +9,6 @@ sudo ldx init
 multipass set local.driver=lxd
 multipass launch --name master -m 4G -d 20GB --network -ldxbr0
 multipass launch --name worker1 -m 4G -d 20GB
-multipass launch --name worker2 -m 4G -d 20GB
 ```
 ## Install microk8s on the multipass nodes
 ```bash
@@ -36,17 +35,13 @@ sudo microk8s add-node
 multipass shell worker1
 sudo snap install microk8s --classic --channel=1.19/stable
 sudo microk8s join 192.168.64.4:25000/IfrgUOBCMGxZyAcRgEXXLONcwMKWpstO
-# repeat these steps for worker2 
 
 ```
 ## Add labels to worker nodes and deploy
 ```bash
 multipass shell master
 kubectl label nodes worker1 voip-environment=edge &&
-kubectl label nodes worker2 voip-environment=edge &&
-# we need to have 2 different groups so no ports are blocked by the other deployment...
 kubectl taint nodes worker1 voip-edge=true:NoSchedule
-kubectl taint nodes worker2 media-edge=true:NoSchedule 
  
 # create registry token
 kubectl create secret docker-registry cognigy-registry-token \
@@ -90,3 +85,4 @@ https://github.com/jambonz/jambonz-infrastructure/blob/Add-kubernetes-deployment
 https://github.com/davehorton/drachtio-ipv6proxy
 https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
 https://pancho.dev/posts/multipass-microk8s-cluster/
+

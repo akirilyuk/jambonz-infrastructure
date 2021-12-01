@@ -18,9 +18,12 @@ spec:
         - name: rtpengine 
           image: jambonz/rtpengine:latest 
           args: ['rtpengine']
-          envFrom:
-            - secretRef:
-                name: jambonz
+          env:
+            - name: RTPENGINE_DTMF_LOG_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: jambonz
+                  key: RTPENGINE_DTMF_LOG_PORT
           ports:
             - containerPort: 22222
       restartPolicy: Always

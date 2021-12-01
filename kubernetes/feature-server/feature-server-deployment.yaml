@@ -44,7 +44,7 @@ spec:
             - name: HTTP_PORT
               value: "3000"
             - name: JAMBONES_SBCS
-              value: "10.48.249.55" ## place the ip of the node which is running sbc
+              value: "10.48.249.55" ## place the ip of the node which is running sbc-sip-daemonset
             - name: "JAMBONES_FEATURE_SERVERS"
               value: "localhost:9022:cymru"
             - name: JAMBONES_FREESWITCH
@@ -60,10 +60,7 @@ spec:
                   name: jambonz
                   key: JAMBONES_CLUSTER_ID
             - name: DRACHTIO_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: jambonz
-                  key: DRACHTIO_HOST
+              value: localhost
             - name: DRACHTIO_PORT
               valueFrom:
                 secretKeyRef:

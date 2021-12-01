@@ -1,10 +1,11 @@
 apiVersion: apps/v1
-kind: DaemonSet
+kind: StatefulSet
 metadata:
   name: jambonz-sbc-rtp
   labels:
     app: jambonz-sbc-rtp
 spec:
+  serviceName: jambonz-sbc-rtp
   selector:
     matchLabels:
       app: jambonz-sbc-rtp

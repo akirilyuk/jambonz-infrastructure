@@ -20,7 +20,7 @@ resources:
 - api-server/api-server-ingress.yaml
 - sbc-sip/sbc-sip-configmap.yaml
 - sbc-sip/sbc-sip-daemonset.yaml
-- sbc-rtp/sbc-rtp-daemonset.yaml
+- sbc-rtp/sbc-rtp-statefulset.yaml
 - sbc-rtp/sbc-rtp-service.yaml
 - feature-server/feature-server-deployment.yaml
 - ingress/traefik-deployment.yaml

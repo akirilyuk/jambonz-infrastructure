@@ -22,6 +22,7 @@ resources:
 - sbc-sip/sbc-sip-daemonset.yaml
 - sbc-rtp/sbc-rtp-daemonset.yaml
 - feature-server/feature-server-deployment.yaml
+- feature-server/feature-server-service.yaml
 - ingress/traefik-deployment.yaml
 - ingress/traefik-service.yaml
 

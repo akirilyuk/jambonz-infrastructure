@@ -26,7 +26,8 @@ spec:
           image: drachtio/drachtio-server:k8s
           imagePullPolicy: Always
           args: ['drachtio', '--contact', 'sip:*:5060;transport=udp,tcp']
-          env: 
+          ports:
+            - containerPort: 9022
         - name: freeswitch
           image: drachtio/drachtio-freeswitch-mrf:1.10.5
           volumeMounts:
@@ -40,6 +41,10 @@ spec:
           env:
             - name: HTTP_PORT
               value: "3000"
+            - name: JAMBONES_SBCS
+              value: "10.48.249.55"
+            - name: "JAMBONES_FEATURE_SERVERS"
+              value: "localhost:9022:cymru"
             - name: JAMBONES_FREESWITCH
               value: "localhost:8021:JambonzR0ck$"
             - name: JAMBONES_LOGLEVEL
@@ -124,6 +129,7 @@ spec:
                   key: JWT_SECRET
           ports:
             - containerPort: 3000
+            - containerPort: 35233
           resources: {}
       restartPolicy: Always
       volumes:

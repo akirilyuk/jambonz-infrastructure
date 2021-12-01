@@ -13,59 +13,7 @@ spec:
       labels:
         app: jambonz-sbc-rtp
     spec:
-      nodeSelector:
-        voip-environment: edge
-      hostNetwork: true
-      dnsPolicy: ClusterFirstWithHostNet
-      tolerations:
-        - key: "media-edge"
-          operator: "Exists"
-          effect: "NoSchedule"
       containers:
-        - name: drachtio
-          image: drachtio/drachtio-server:k8s
-          imagePullPolicy: Always
-          args: ['drachtio', '--port', '9023']
-          env: 
-            - name: NO_PUBLIC_IP
-              value: "1"
-            - name: DRACHTIO_SIP_PORT
-              value: "5064"
-        - name: rtpengine-sidecar
-          image: jambonz/rtpengine-sidecar:latest
-          env:
-            - name: DRACHTIO_PORT
-              value: "9023"
-            - name: JAMBONES_CLUSTER_ID
-              valueFrom:
-                secretKeyRef:
-                  name: jambonz
-                  key: JAMBONES_CLUSTER_ID
-            - name: DRACHTIO_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: jambonz
-                  key: DRACHTIO_HOST
-            - name: DRACHTIO_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: jambonz
-                  key: DRACHTIO_SECRET
-            - name: JAMBONES_REDIS_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: jambonz
-                  key: JAMBONES_REDIS_HOST
-            - name: JAMBONES_REDIS_PORT
-              valueFrom:
-                secretKeyRef:
-                  name: jambonz
-                  key: JAMBONES_REDIS_PORT
-            - name: RTPENGINE_DTMF_LOG_PORT
-              valueFrom:
-                secretKeyRef:
-                  name: jambonz
-                  key: RTPENGINE_DTMF_LOG_PORT
         - name: rtpengine 
           image: jambonz/rtpengine:latest 
           args: ['rtpengine']

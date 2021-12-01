@@ -33,6 +33,8 @@ spec:
           volumeMounts:
             - mountPath: /tmp 
               name: temp-audio-volume
+          ports:
+            - containerPort: 8081
         - name: feature-server 
           image: jambonz/feature-server:latest 
           volumeMounts:
@@ -42,7 +44,7 @@ spec:
             - name: HTTP_PORT
               value: "3000"
             - name: JAMBONES_SBCS
-              value: "10.48.249.55"
+              value: "10.48.249.55" ## place the ip of the node which is running sbc
             - name: "JAMBONES_FEATURE_SERVERS"
               value: "localhost:9022:cymru"
             - name: JAMBONES_FREESWITCH

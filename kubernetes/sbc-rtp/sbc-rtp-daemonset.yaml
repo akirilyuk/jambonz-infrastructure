@@ -20,4 +20,6 @@ spec:
           envFrom:
             - secretRef:
                 name: jambonz
+          ports:
+            - containerPort: 22222
       restartPolicy: Always

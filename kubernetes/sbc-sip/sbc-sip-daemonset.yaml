@@ -79,11 +79,17 @@ spec:
           envFrom:
             - secretRef:
                 name: jambonz
+          env:
+            - name: JAMBONES_RTPENGINES
+              value: "jambonz-sbc-rtp:22222"
         - name: sbc-registrar
           image: jambonz/sbc-registrar:latest
           envFrom:
             - secretRef:
                 name: jambonz
+          env:
+            - name: JAMBONES_RTPENGINES
+              value: "jambonz-sbc-rtp:22222"
         - name: sbc-inbound
           image: jambonz/sbc-inbound:latest
           envFrom:
@@ -91,7 +97,7 @@ spec:
                 name: jambonz
           env:
             - name: JAMBONES_RTPENGINES
-              value: "10.1.219.104:22222" #"jambonz-sbc-rtp:22222"
+              value: "jambonz-sbc-rtp:22222"
         - name: sbc-outbound
           image: jambonz/sbc-outbound:latest
           envFrom:
@@ -99,7 +105,7 @@ spec:
                 name: jambonz
           env:
             - name: JAMBONES_RTPENGINES
-              value: "10.1.219.104:22222" #"jambonz-sbc-rtp:22222"
+              value: "jambonz-sbc-rtp:22222"
       restartPolicy: Always
       volumes:
       - name: jambonz-sbc-sip-conf

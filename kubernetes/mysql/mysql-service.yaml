@@ -4,6 +4,7 @@ metadata:
   labels:
     app: mysql
   name: mysql
+  namespace: jambonz
 spec:
   ports:
     - name: "mysql"

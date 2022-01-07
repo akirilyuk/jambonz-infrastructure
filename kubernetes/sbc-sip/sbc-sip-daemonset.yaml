@@ -1,6 +1,7 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
+  namespace: jambonz
   name: jambonz-sbc-sip
   labels:
     app: jambonz-sbc-sip
@@ -35,7 +36,7 @@ spec:
           args: ['drachtio', '--loglevel', 'debug', '--contact', 'sip:$(MY_POD_IP);transport=udp,tcp']
           envFrom:
             - secretRef:
-                name: jambonz
+                name: jambonz-secrets
           env:
             - name: MY_POD_IP
               valueFrom:
@@ -53,59 +54,18 @@ spec:
             - mountPath: /etc/drachtio.conf.xml
               name: jambonz-sbc-sip-conf
               subPath: drachtio.conf.xml
-        - name: sbc-call-router
-          image: jambonz/sbc-call-router:latest
-          env:
-            - name: HTTP_PORT
-              value: "4000"
-            - name: JAMBONES_INBOUND_ROUTE
-              value: "127.0.0.1:4002"
-            - name: JAMBONES_OUTBOUND_ROUTE
-              value: "127.0.0.1:4003"
-            - name: JAMBONZ_TAGGED_INBOUND
-              value: "1"
-            - name: ENABLE_METRICS
-              valueFrom:
-                secretKeyRef:
-                  name: jambonz
-                  key: ENABLE_METRICS
-            - name: JAMBONES_NETWORK_CIDR
-              valueFrom:
-                secretKeyRef:
-                  name: jambonz
-                  key: JAMBONES_NETWORK_CIDR
         - name: sbc-options-handler
-          image: jambonz/sbc-options-handler:latest
+          image: jambonz/sbc-options-handler:k8s
+          imagePullPolicy: Always 
           envFrom:
-            - secretRef:
-                name: jambonz
+            - configMapRef:
+                name: jambonz-env
           env:
-            - name: JAMBONES_RTPENGINES
-              value: "jambonz-sbc-rtp:22222"
-        - name: sbc-registrar
-          image: jambonz/sbc-registrar:latest
-          envFrom:
-            - secretRef:
-                name: jambonz
-          env:
-            - name: JAMBONES_RTPENGINES
-              value: "jambonz-sbc-rtp:22222"
-        - name: sbc-inbound
-          image: jambonz/sbc-inbound:latest
-          envFrom:
-            - secretRef:
-                name: jambonz
-          env:
-            - name: JAMBONES_RTPENGINES
-              value: "jambonz-sbc-rtp:22222"
-        - name: sbc-outbound
-          image: jambonz/sbc-outbound:latest
-          envFrom:
-            - secretRef:
-                name: jambonz
-          env:
-            - name: JAMBONES_RTPENGINES
-              value: "jambonz-sbc-rtp:22222"
+            - name: DRACHTIO_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: jambonz-secrets
+                  key: DRACHTIO_SECRET
       restartPolicy: Always
       volumes:
       - name: jambonz-sbc-sip-conf

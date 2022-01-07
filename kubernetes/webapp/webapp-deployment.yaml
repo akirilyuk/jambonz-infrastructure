@@ -4,6 +4,7 @@ metadata:
   labels:
     app: webapp
   name: webapp
+  namespace: jambonz
 spec:
   replicas: 1
   selector:
@@ -19,11 +20,9 @@ spec:
       containers:
         - env:
             - name: REACT_APP_API_BASE_URL
-              value: http://api/v1
+              value: http://api.k8s-gcp.jambonz.org/v1
             - name: NODE_OPTIONS
               value: '--openssl-legacy-provider'
-            - name: DEBUG 
-              value: 'express:*'
           image: jambonz/webapp:latest
           name: webapp
           ports:

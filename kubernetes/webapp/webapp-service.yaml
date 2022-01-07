@@ -4,9 +4,10 @@ metadata:
   labels:
     app: webapp
   name: webapp
+  namespace: jambonz
 spec:
   ports:
-    - name: "webapp"
+    - name: webapp
       port: 3001
       targetPort: 3001
   type: NodePort

@@ -4,6 +4,7 @@ metadata:
   labels:
     app: mysql
   name: mysql
+  namespace: jambonz
 spec:
   serviceName: mysql
   replicas: 1
@@ -24,18 +25,18 @@ spec:
               value: "yes"
             - name: MYSQL_DATABASE
               valueFrom:
-                secretKeyRef:
-                  name: jambonz
+                configMapKeyRef:
+                  name: jambonz-env
                   key: JAMBONES_MYSQL_DATABASE
             - name: MYSQL_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: jambonz
-                  key: JAMBONES_MYSQL_PASSWORD
+                  name: jambonz-secrets
+                  key: MYSQL_PASSWORD
             - name: MYSQL_USER
               valueFrom:
-                secretKeyRef:
-                  name: jambonz
+                configMapKeyRef:
+                  name: jambonz-env
                   key: JAMBONES_MYSQL_USER
           image: mysql
           livenessProbe:

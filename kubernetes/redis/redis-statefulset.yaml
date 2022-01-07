@@ -4,6 +4,7 @@ metadata:
   labels:
     app: redis
   name: redis
+  namespace: jambonz
 spec:
   serviceName: redis
   replicas: 1

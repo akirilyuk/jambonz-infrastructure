@@ -1,17 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: jambonz-feature-server
+  name: feature-server
   labels:
-    app: jambonz-feature-server
+    app: feature-server
+  namespace: voicegateway
 spec:
   selector:
     matchLabels:
-      app: jambonz-feature-server
+      app: feature-server
   template:
     metadata:
       labels:
-        app: jambonz-feature-server
+        app: feature-server
     spec:
       initContainers:
         - args:
@@ -25,112 +26,76 @@ spec:
         - name: drachtio
           image: drachtio/drachtio-server:k8s
           imagePullPolicy: Always
+          lifecycle:
+            preStop:
+              exec:
+                command: [
+                  "/bin/sh",
+                  "-c",
+                  "while $(curl --output /dev/null --silent --head --fail-early http://127.0.0.1:3000); do printf '.'; sleep 10; done"
+                ]
           args: ['drachtio', '--contact', 'sip:*:5060;transport=udp,tcp']
           ports:
             - containerPort: 9022
         - name: freeswitch
           image: drachtio/drachtio-freeswitch-mrf:1.10.5
+          lifecycle:
+            preStop:
+              exec:
+                command: [
+                  "/bin/sh",
+                  "-c",
+                  "while $(curl --output /dev/null --silent --head --fail-early http://127.0.0.1:3000); do printf '.'; sleep 10; done"
+                ]
           volumeMounts:
             - mountPath: /tmp 
               name: temp-audio-volume
           ports:
             - containerPort: 8081
         - name: feature-server 
-          image: jambonz/feature-server:latest 
+          image: jambonz/feature-server:k8s
+          imagePullPolicy: Always
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "/opt/app/bin/k8s-pre-stop-hook.js"]
           volumeMounts:
             - mountPath: /tmp 
               name: temp-audio-volume
+          envFrom:
+            - configMapRef:
+                name: jambonz-env
           env:
             - name: HTTP_PORT
               value: "3000"
-            - name: JAMBONES_SBCS
-              value: "10.48.249.55" ## place the ip of the node which is running sbc-sip-daemonset
             - name: "JAMBONES_FEATURE_SERVERS"
-              value: "localhost:9022:cymru"
+              value: "127.0.0.1:9022:cymru"
             - name: JAMBONES_FREESWITCH
-              value: "localhost:8021:JambonzR0ck$"
-            - name: JAMBONES_LOGLEVEL
-              valueFrom:
-                secretKeyRef:
-                  name: jambonz
-                  key: JAMBONES_LOGLEVEL
-            - name: JAMBONES_CLUSTER_ID
-              valueFrom:
-                secretKeyRef:
-                  name: jambonz
-                  key: JAMBONES_CLUSTER_ID
-            - name: DRACHTIO_HOST
-              value: localhost
-            - name: DRACHTIO_PORT
-              valueFrom:
-                secretKeyRef:
-                  name: jambonz
-                  key: DRACHTIO_PORT
+              value: "127.0.0.1:8021:JambonzR0ck$"
             - name: DRACHTIO_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: jambonz
+                  name: jambonz-secrets
                   key: DRACHTIO_SECRET
-            - name: JAMBONES_MYSQL_DATABASE
-              valueFrom:
-                secretKeyRef:
-                  name: jambonz
-                  key: JAMBONES_MYSQL_DATABASE
-            - name: JAMBONES_MYSQL_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: jambonz
-                  key: JAMBONES_MYSQL_HOST
             - name: JAMBONES_MYSQL_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: jambonz
-                  key: JAMBONES_MYSQL_PASSWORD
-            - name: JAMBONES_MYSQL_USER
-              valueFrom:
-                secretKeyRef:
-                  name: jambonz
-                  key: JAMBONES_MYSQL_USER
-            - name: JAMBONES_REDIS_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: jambonz
-                  key: JAMBONES_REDIS_HOST
-            - name: JAMBONES_REDIS_PORT
-              valueFrom:
-                secretKeyRef:
-                  name: jambonz
-                  key: JAMBONES_REDIS_PORT
-            - name: JAMBONES_TIME_SERIES_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: jambonz
-                  key: JAMBONES_TIME_SERIES_HOST
-            - name: ENABLE_METRICS
-              valueFrom:
-                secretKeyRef:
-                  name: jambonz
-                  key: ENABLE_METRICS
-            - name: JAMBONES_NETWORK_CIDR
-              valueFrom:
-                secretKeyRef:
-                  name: jambonz
-                  key: JAMBONES_NETWORK_CIDR
-            - name: JAMBONES_NETWORK_CIDR
-              valueFrom:
-                secretKeyRef:
-                  name: jambonz
-                  key: JAMBONES_NETWORK_CIDR
+                  name: jambonz-secrets
+                  key: MYSQL_PASSWORD
             - name: JWT_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: jambonz
+                  name: jambonz-secrets
                   key: JWT_SECRET
           ports:
             - containerPort: 3000
-            - containerPort: 35233
           resources: {}
       restartPolicy: Always
       volumes:
       - name: temp-audio-volume
         emptyDir: {}
+      terminationGracePeriodSeconds: 900

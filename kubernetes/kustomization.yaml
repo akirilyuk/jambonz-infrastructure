@@ -4,29 +4,33 @@ kind: Kustomization
 namespace: jambonz
 
 resources:
-- namespace.yaml
-- rbac/role.yaml
-- rbac/role-binding.yaml
+- api-server/api-server-deployment.yaml
+- api-server/api-server-ingress.yaml
+- api-server/api-server-service.yaml
 - db/db-create.yaml
+- feature-server/feature-server-deployment.yaml
+- feature-server/feature-server-service.yaml
 - mysql/mysql-service.yaml
 - mysql/mysql-statefulset.yaml
+- rbac/role-binding.yaml
+- rbac/role.yaml
 - redis/redis-service.yaml
 - redis/redis-statefulset.yaml
-- webapp/webapp-deployment.yaml
-- webapp/webapp-service.yaml
-- webapp/webapp-ingress.yaml
-- api-server/api-server-deployment.yaml
-- api-server/api-server-service.yaml
-- api-server/api-server-ingress.yaml
+- sbc-rtp/sbc-rtp-daemonset.yaml
+- sbc-rtp/sbc-rtp-service.yaml
 - sbc-sip/sbc-sip-configmap.yaml
 - sbc-sip/sbc-sip-daemonset.yaml
-- sbc-rtp/sbc-rtp-statefulset.yaml
-- sbc-rtp/sbc-rtp-service.yaml
-- feature-server/feature-server-deployment.yaml
-- ingress/traefik-deployment.yaml
-- ingress/traefik-service.yaml
-
-secretGenerator:
-  - name: jambonz
-    namespace: jambonz
-    env: jambonz.env
+- sbc-sip/sbc-inbound-deployment.yaml
+- sbc-sip/sbc-inbound-service.yaml
+- sbc-sip/sbc-outbound-deployment.yaml
+- sbc-sip/sbc-outbound-service.yaml
+- sbc-sip/sbc-call-router-deployment.yaml
+- sbc-sip/sbc-call-router-service.yaml
+- sbc-sip/sbc-register-deployment.yaml
+- sbc-sip/sbc-register-service.yaml
+- webapp/webapp-deployment.yaml
+- webapp/webapp-ingress.yaml
+- webapp/webapp-service.yaml
+- secrets/jambonz-secrets.yaml
+- configmap/jambonz-configmap.yaml
+- namespace.yaml

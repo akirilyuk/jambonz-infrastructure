@@ -4,6 +4,7 @@ metadata:
   labels:
     app: api-server
   name: api-server
+  namespace: jambonz
 spec:
   replicas: 1
   selector:
@@ -27,66 +28,24 @@ spec:
       containers:
         - name: api-server
           image: jambonz/jambonz-api-server:latest
+          envFrom:
+            - configMapRef:
+                name: jambonz-env
           env:
             - name: HTTP_PORT
               value: "3000"
             - name: JAMBONE_API_VERSION
               value: v1
-            - name: JAMBONES_CLUSTER_ID
-              valueFrom:
-                secretKeyRef:
-                  name: jambonz
-                  key: JAMBONES_CLUSTER_ID
             - name: JWT_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: jambonz
+                  name: jambonz-secrets
                   key: JWT_SECRET
-            - name: NODE_ENV
-              valueFrom:
-                secretKeyRef:
-                  name: jambonz
-                  key: NODE_ENV
-            - name: JAMBONES_MYSQL_DATABASE
-              valueFrom:
-                secretKeyRef:
-                  name: jambonz
-                  key: JAMBONES_MYSQL_DATABASE
-            - name: JAMBONES_MYSQL_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: jambonz
-                  key: JAMBONES_MYSQL_HOST
             - name: JAMBONES_MYSQL_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: jambonz
-                  key: JAMBONES_MYSQL_PASSWORD
-            - name: JAMBONES_MYSQL_USER
-              valueFrom:
-                secretKeyRef:
-                  name: jambonz
-                  key: JAMBONES_MYSQL_USER
-            - name: JAMBONES_REDIS_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: jambonz
-                  key: JAMBONES_REDIS_HOST
-            - name: JAMBONES_REDIS_PORT
-              valueFrom:
-                secretKeyRef:
-                  name: jambonz
-                  key: JAMBONES_REDIS_PORT
-            - name: JAMBONES_TIME_SERIES_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: jambonz
-                  key: JAMBONES_TIME_SERIES_HOST
-            - name: ENABLE_METRICS
-              valueFrom:
-                secretKeyRef:
-                  name: jambonz
-                  key: ENABLE_METRICS
+                  name: jambonz-secrets
+                  key: MYSQL_PASSWORD
           ports:
             - containerPort: 3000
           resources: {}
